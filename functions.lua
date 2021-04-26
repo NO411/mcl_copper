@@ -89,9 +89,11 @@ local anti_oxidation = function(itemstack, placer, pointed_thing)
 			anti_oxidation_particles(pointed_thing)
 			add_wear(placer, itemstack)
 		end
-	else 
+	elseif noddef._mcl_stripped_varient ~= nil then
 		minetest.swap_node(pointed_thing.under, {name=noddef._mcl_stripped_varient, param2=node.param2})
 		add_wear(placer, itemstack)
+	else
+		return itemstack
 	end
     return itemstack
 end
