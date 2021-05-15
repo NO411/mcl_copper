@@ -1,7 +1,7 @@
 local register_oxidation_abm = function(abm_name, node_name, oxidized_varient)
 	minetest.register_abm({
 		label = abm_name,
-		nodenames = node_name,
+		nodenames = {node_name},
 		interval = 500,
 		chance = 3,
 		action = function(pos, node)
@@ -11,24 +11,24 @@ local register_oxidation_abm = function(abm_name, node_name, oxidized_varient)
 end
 
 local stairs = {
-	{"mcl_stairs:stair_copper_exposed_cut_inner", "mcl_stairs:stair_copper_cut_inner"},
-	{"mcl_stairs:stair_copper_weathered_cut_inner", "mcl_stairs:stair_copper_exposed_cut_inner"},
-	{"mcl_stairs:stair_copper_exposed_cut_outer", "mcl_stairs:stair_copper_cut_outer"},
-	{"mcl_stairs:stair_copper_weathered_cut_outer", "mcl_stairs:stair_copper_exposed_cut_outer"},
-	{"mcl_stairs:stair_copper_oxidized_cut_outer", "mcl_stairs:stair_copper_weathered_cut_outer"},
-	{"mcl_stairs:stair_copper_oxidized_cut_inner", "mcl_stairs:stair_copper_weathered_cut_inner"},
-	{"mcl_stairs:slab_copper_exposed_cut","mcl_stairs:slab_copper_cut"},
-	{"mcl_stairs:slab_copper_oxidized_cut","mcl_stairs:slab_copper_weathered_cut"},
-	{"mcl_stairs:slab_copper_weathered_cut","mcl_stairs:slab_copper_exposed_cut"},
-	{"mcl_stairs:slab_copper_exposed_cut_top","mcl_stairs:slab_copper_cut_top"},
-	{"mcl_stairs:slab_copper_oxidized_cut_top","mcl_stairs:slab_copper_weathered_cut_top"},
-	{"mcl_stairs:slab_copper_weathered_cut_top","mcl_stairs:slab_copper_exposed_cut_top"},
-	{"mcl_stairs:slab_copper_exposed_cut_double","mcl_stairs:slab_copper_cut_double"},
-	{"mcl_stairs:slab_copper_oxidized_cut_double","mcl_stairs:slab_copper_weathered_cut_double"},
-	{"mcl_stairs:slab_copper_weathered_cut_double","mcl_stairs:slab_copper_exposed_cut_double"},
-	{"mcl_stairs:stair_copper_exposed_cut","mcl_stairs:stair_copper_cut"},
-	{"mcl_stairs:stair_copper_oxidized_cut","mcl_stairs:stair_copper_weathered_cut"},
-	{"mcl_stairs:stair_copper_weathered_cut","mcl_stairs:stair_copper_exposed_cut"},	
+	{"stair", "exposed", "_inner", "cut_inner"},
+	{"stair", "weathered", "_inner", "exposed_cut_inner"},
+	{"stair", "exposed", "_outer", "cut_outer"},
+	{"stair", "weathered", "_outer", "exposed_cut_outer"},
+	{"stair", "oxidized", "_outer", "weathered_cut_outer"},
+	{"stair", "oxidized", "_inner", "weathered_cut_inner"},
+	{"slab", "exposed", "","cut"},
+	{"slab", "oxidized", "","weathered_cut"},
+	{"slab", "weathered", "","exposed_cut"},
+	{"slab", "exposed", "_top","cut_top"},
+	{"slab", "oxidized", "_top", "weathered_cut_top"},
+	{"slab", "weathered", "_top","exposed_cut_top"},
+	{"slab", "exposed", "_double","cut_double"},
+	{"slab", "oxidized", "_double","weathered_cut_double"},
+	{"slab", "weathered", "_double","exposed_cut_double"},
+	{"stair", "exposed", "","cut"},
+	{"stair", "oxidized", "", "weathered_cut"},
+	{"stair", "weathered", "", "exposed_cut"}
 }
 
 local anti_oxidation_particles = function(pointed_thing)
@@ -41,7 +41,7 @@ local anti_oxidation_particles = function(pointed_thing)
 		minvel = {x = 0, y = 0, z = 0},
 		maxvel = {x = 0, y = 0, z = 0},
 		minacc = {x = 0, y = 0, z = 0},
-		maxacc = {x = 0, y = -0.1, z = 0},
+		maxacc = {x = 0, y = 0, z = 0},
 		minexptime = 0.5,
 		maxexptime = 1,
 		minsize = 1,
@@ -78,8 +78,8 @@ local anti_oxidation = function(itemstack, placer, pointed_thing)
 
     if noddef._mcl_stripped_varient == nil then
 		for _, c in pairs(stairs) do
-			if noddef.name == c[1] then
-				minetest.swap_node(pointed_thing.under, {name=c[2], param2=node.param2})
+			if noddef.name == "mcl_stairs:"..c[1].."_copper_"..c[2].."_cut"..c[3] then
+				minetest.swap_node(pointed_thing.under, {name="mcl_stairs:"..c[1].."_copper_"..c[4], param2=node.param2})
 				anti_oxidation_particles(pointed_thing)
 				add_wear(placer, itemstack)
 			end
@@ -129,30 +129,43 @@ if minetest.settings:get_bool("mcl_generate_ores", true) then
 	})
 end
 
-register_oxidation_abm("Copper block oxidation", {"mcl_copper:block"}, "mcl_copper:block_exposed")
-register_oxidation_abm("Cut copper block oxidation", {"mcl_copper:block_cut"}, "mcl_copper:block_exposed_cut")
-register_oxidation_abm("Exposed copper oxidation", {"mcl_copper:block_exposed"}, "mcl_copper:block_weathered")
-register_oxidation_abm("Cut exposed copper oxidation", {"mcl_copper:block_exposed_cut"}, "mcl_copper:block_weathered_cut")
-register_oxidation_abm("Weathered copper oxidation", {"mcl_copper:block_weathered"}, "mcl_copper:block_oxidized")
-register_oxidation_abm("Cut weathered copper oxidation", {"mcl_copper:block_weathered_cut"}, "mcl_copper:block_oxidized_cut")
-register_oxidation_abm("Cut copper slab oxidation", {"mcl_stairs:slab_copper_cut"}, "mcl_stairs:slab_copper_exposed_cut")
-register_oxidation_abm("Cut exposed copper slab oxidation", {"mcl_stairs:slab_copper_exposed_cut"}, "mcl_stairs:slab_copper_weathered_cut")
-register_oxidation_abm("Cut weathered copper slab oxidation", {"mcl_stairs:slab_copper_weathered_cut"}, "mcl_stairs:slab_copper_oxidized_cut")
-register_oxidation_abm("Cut top copper slab oxidatiom", {"mcl_stairs:slab_copper_cut_top"}, "mcl_stairs:slab_copper_exposed_cut_top")
-register_oxidation_abm("Cut exposed copper slab oxidation", {"mcl_stairs:slab_copper_exposed_cut_top"}, "mcl_stairs:slab_copper_weathered_cut_top")
-register_oxidation_abm("Cut weathered top copper slab", {"mcl_stairs:slab_copper_weathered_cut_top"}, "mcl_stairs:slab_copper_oxidized_cut_double")
-register_oxidation_abm("Cut double copper slab oxidation", {"mcl_stairs:slab_copper_cut_double"}, "mcl_stairs:slab_copper_exposed_cut_double")
-register_oxidation_abm("Cut exposed double copper slab oxidation", {"mcl_stairs:slab_copper_exposed_cut_double_inner"}, "mcl_stairs:slab_copper_weathered_cut_double")
-register_oxidation_abm("Cut weathered double copper slab oxidation", {"mcl_stairs:slab_copper_weathered_cut_double"}, "mcl_stairs:slab_copper_oxidized_cut_double")
-register_oxidation_abm("Cut copper stair oxidation", {"mcl_stairs:stair_copper_cut"}, "mcl_stairs:stair_copper_exposed_cut")
-register_oxidation_abm("Cut exposed copper stair oxidation", {"mcl_stairs:stair_copper_exposed_cut"}, "mcl_stairs:stair_copper_weathered_cut")
-register_oxidation_abm("Cut weathered copper stair oxidation", {"mcl_stairs:stair_copper_weathered_cut"}, "mcl_stairs:stair_copper_oxidized_cut")
-register_oxidation_abm("Inner cut copper stair oxidation", {"mcl_stairs:stair_copper_cut_inner"}, "mcl_stairs:stair_copper_exposed_cut_inner")
-register_oxidation_abm("Inner cut exposed copper stair oxidation", {"mcl_stairs:stair_copper_exposed_cut_inner"}, "mcl_stairs:stair_copper_weathered_cut_inner")
-register_oxidation_abm("Inner cut weathered copper stair oxidation", {"mcl_stairs:stair_copper_weathered_cut_inner"}, "mcl_stairs:stair_copper_oxidized_cut_inner")
-register_oxidation_abm("Outer cut copper stair oxidation", {"mcl_stairs:stair_copper_cut_outer"}, "mcl_stairs:stair_copper_exposed_cut_outer")
-register_oxidation_abm("Outer cut exposed copper stair oxidation", {"mcl_stairs:stair_copper_exposed_cut_outer"}, "mcl_stairs:stair_copper_weathered_cut_outer")
-register_oxidation_abm("Outer cut weathered copper stair oxidation", {"mcl_stairs:stair_copper_weathered_cut_outer"}, "mcl_stairs:stair_copper_oxidized_cut_outer")
+local block_oxidation = {
+	{"", "_exposed"},
+	{"_cut", "_exposed_cut"},
+	{"_exposed", "_weathered"},
+	{"_exposed_cut", "_weathered_cut"},
+	{"_weathered", "_oxidized"},
+	{"_weathered_cut", "_oxidized_cut"}
+}
+
+local stair_oxidation = {
+	{"slab", "cut", "exposed_cut"},
+	{"slab", "exposed_cut", "weathered_cut"},
+	{"slab", "weathered_cut", "oxidized_cut"},
+	{"slab", "cut_top", "exposed_cut_top"},
+	{"slab", "exposed_cut_top", "weathered_cut_top"},
+	{"slab", "weathered_cut_top", "oxidized_cut_double"},
+	{"slab", "cut_double", "exposed_cut_double"},
+	{"slab", "exposed_cut_double", "weathered_cut_double"},
+	{"slab", "weathered_cut_double", "oxidized_cut_double"},
+	{"stair", "cut", "exposed_cut"},
+	{"stair", "exposed_cut", "weathered_cut"},
+	{"stair", "weathered_cut", "oxidized_cut"},
+	{"stair", "cut_inner", "exposed_cut_inner"},
+	{"stair", "exposed_cut_inner", "weathered_cut_inner"},
+	{"stair", "weathered_cut_inner", "oxidized_cut_inner"},
+	{"stair", "cut_outer", "exposed_cut_outer"},
+	{"stair", "exposed_cut_outer", "weathered_cut_outer"},
+	{"stair", "weathered_cut_outer", "oxidized_cut_outer"}
+}
+
+for _, b in pairs(block_oxidation) do
+	register_oxidation_abm("Copper oxidation", "mcl_copper:block"..b[1], "mcl_copper:block"..b[2])
+end
+
+for _, s in pairs(stair_oxidation) do
+	register_oxidation_abm("Copper oxidation", "mcl_stairs:"..s[1].."_copper_"..s[2], "mcl_stairs:"..s[1].."_copper_"..s[3])
+end
 
 register_axe_override("wood")
 register_axe_override("stone")
