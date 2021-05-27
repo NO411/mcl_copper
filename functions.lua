@@ -1,4 +1,4 @@
-local register_oxidation_abm = function(abm_name, node_name, oxidized_varient)
+local function register_oxidation_abm(abm_name, node_name, oxidized_varient)
 	minetest.register_abm({
 		label = abm_name,
 		nodenames = {node_name},
@@ -31,7 +31,7 @@ local stairs = {
 	{"stair", "weathered", "", "exposed_cut"}
 }
 
-local anti_oxidation_particles = function(pointed_thing)
+local function anti_oxidation_particles(pointed_thing)
 	local pos = pointed_thing.under
 	minetest.add_particlespawner({
 		amount = 8,
@@ -53,7 +53,7 @@ local anti_oxidation_particles = function(pointed_thing)
 	})
 end
 
-local add_wear = function(placer, itemstack)
+local function add_wear(placer, itemstack)
 	if not minetest.is_creative_enabled(placer:get_player_name()) then
 		local tool = itemstack:get_name()
 		local wear = mcl_autogroup.get_wear(tool, "axey")
@@ -61,7 +61,7 @@ local add_wear = function(placer, itemstack)
 	end
 end
 
-local anti_oxidation = function(itemstack, placer, pointed_thing)
+local function anti_oxidation(itemstack, placer, pointed_thing)
     if pointed_thing.type ~= "node" then return end
 
 	local node = minetest.get_node(pointed_thing.under)
@@ -98,7 +98,7 @@ local anti_oxidation = function(itemstack, placer, pointed_thing)
     return itemstack
 end
 
-local register_axe_override = function(axe_name)
+local function register_axe_override(axe_name)
 	minetest.override_item("mcl_tools:axe_"..axe_name, {
 		on_place = anti_oxidation,
 	})
@@ -166,9 +166,7 @@ end
 for _, s in pairs(stair_oxidation) do
 	register_oxidation_abm("Copper oxidation", "mcl_stairs:"..s[1].."_copper_"..s[2], "mcl_stairs:"..s[1].."_copper_"..s[3])
 end
-
-register_axe_override("wood")
-register_axe_override("stone")
-register_axe_override("iron")
-register_axe_override("gold")
-register_axe_override("diamond")
+local axes = {"wood", "stone", "iron", "gold", "diamond"}
+for _, axe in pairs(axes) do
+	register_axe_override(axe)
+end
