@@ -1,11 +1,11 @@
-local function register_oxidation_abm(abm_name, node_name, oxidized_varient)
+local function register_oxidation_abm(abm_name, node_name, oxidized_variant)
 	minetest.register_abm({
 		label = abm_name,
 		nodenames = {node_name},
 		interval = 500,
 		chance = 3,
 		action = function(pos, node)
-			minetest.swap_node(pos, {name=oxidized_varient, param2=node.param2})
+			minetest.swap_node(pos, {name=oxidized_variant, param2=node.param2})
 		end
 	})
 end
@@ -76,7 +76,7 @@ local function anti_oxidation(itemstack, placer, pointed_thing)
         return itemstack
     end
 
-    if noddef._mcl_stripped_varient == nil then
+    if noddef._mcl_stripped_variant == nil then
 		for _, c in pairs(stairs) do
 			if noddef.name == "mcl_stairs:"..c[1].."_copper_"..c[2].."_cut"..c[3] then
 				minetest.swap_node(pointed_thing.under, {name="mcl_stairs:"..c[1].."_copper_"..c[4], param2=node.param2})
@@ -84,13 +84,13 @@ local function anti_oxidation(itemstack, placer, pointed_thing)
 				add_wear(placer, itemstack)
 			end
 		end
-		if noddef._mcl_anti_oxidation_varient ~= nil then
-			minetest.swap_node(pointed_thing.under, {name=noddef._mcl_anti_oxidation_varient, param2=node.param2})
+		if noddef._mcl_anti_oxidation_variant ~= nil then
+			minetest.swap_node(pointed_thing.under, {name=noddef._mcl_anti_oxidation_variant, param2=node.param2})
 			anti_oxidation_particles(pointed_thing)
 			add_wear(placer, itemstack)
 		end
-	elseif noddef._mcl_stripped_varient ~= nil then
-		minetest.swap_node(pointed_thing.under, {name=noddef._mcl_stripped_varient, param2=node.param2})
+	elseif noddef._mcl_stripped_variant ~= nil then
+		minetest.swap_node(pointed_thing.under, {name=noddef._mcl_stripped_variant, param2=node.param2})
 		add_wear(placer, itemstack)
 	else
 		return itemstack
