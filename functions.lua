@@ -1,3 +1,4 @@
+local deepslate_mod = minetest.get_modpath("mcl_deepslate")
 local function register_oxidation_abm(abm_name, node_name, oxidized_variant)
 	minetest.register_abm({
 		label = abm_name,
@@ -105,28 +106,29 @@ local function register_axe_override(axe_name)
 end
 
 local stonelike = {"mcl_core:stone", "mcl_core:diorite", "mcl_core:andesite", "mcl_core:granite"}
-
-if minetest.settings:get_bool("mcl_generate_ores", true) then
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "mcl_copper:stone_with_copper",
-		wherein        = stonelike,
-		clust_scarcity = 830,
-		clust_num_ores = 5,
-		clust_size     = 3,
-		y_min          = mcl_vars.mg_overworld_min,
-		y_max          = mcl_worlds.layer_to_y(39),
-	})
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "mcl_copper:stone_with_copper",
-		wherein        = stonelike,
-		clust_scarcity = 1660,
-		clust_num_ores = 4,
-		clust_size     = 2,
-		y_min          = mcl_worlds.layer_to_y(40),
-		y_max          = mcl_worlds.layer_to_y(63),
-	})
+if not deepslate_mod then
+	if minetest.settings:get_bool("mcl_generate_ores", true) then
+		minetest.register_ore({
+			ore_type       = "scatter",
+			ore            = "mcl_copper:stone_with_copper",
+			wherein        = stonelike,
+			clust_scarcity = 830,
+			clust_num_ores = 5,
+			clust_size     = 3,
+			y_min          = mcl_vars.mg_overworld_min,
+			y_max          = mcl_worlds.layer_to_y(39),
+		})
+		minetest.register_ore({
+			ore_type       = "scatter",
+			ore            = "mcl_copper:stone_with_copper",
+			wherein        = stonelike,
+			clust_scarcity = 1660,
+			clust_num_ores = 4,
+			clust_size     = 2,
+			y_min          = mcl_worlds.layer_to_y(40),
+			y_max          = mcl_worlds.layer_to_y(63),
+		})
+	end
 end
 
 local block_oxidation = {
